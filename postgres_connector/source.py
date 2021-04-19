@@ -5,7 +5,7 @@ from typing import Union
 from apache_beam.io import iobase
 from apache_beam.options.value_provider import ValueProvider
 
-from postgres_connector.splitters.base_splitter import BaseSplitter
+from postgres_connector.splitters import BaseSplitter
 from postgres_connector.client import PostgresClient
 from postgres_connector.utils import clean_query
 from postgres_connector.utils import get_runtime_value

@@ -1,10 +1,12 @@
 """A client of PostgreSQL."""
 
+import ujson
 from logging import INFO, getLogger
 from typing import Dict
 from typing import Generator
 from typing import List
-
+import psycopg2
+import psycopg2.extras
 
 from postgres_connector.errors import PostgresClientError, PostgresConnectorError
 
@@ -38,8 +40,7 @@ class PostgresClient:
         self._validate_query(query, [_SELECT_STATEMENT])
 
         with _PostgresConnection(self._config) as conn:
-            # buffered is false because it can be assumed that the data size is too large
-            cur = conn.cursor(buffered=False, dictionary=dictionary)
+            cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
             try:
                 cur.execute(query)
@@ -70,8 +71,7 @@ class PostgresClient:
         count_query = f"SELECT COUNT(*) AS count FROM ({query}) as subq"
 
         with _PostgresConnection(self._config) as conn:
-            # buffered is false because it can be assumed that the data size is too large
-            cur = conn.cursor(buffered=False, dictionary=True)
+            cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
             try:
                 cur.execute(count_query)
@@ -101,11 +101,10 @@ class PostgresClient:
             ~postgres_connector.errors.PostgresClientError
         """
         self._validate_query(query, [_SELECT_STATEMENT])
-        count_query = f"EXPLAIN SELECT * FROM ({query}) as subq"
+        count_query = f"EXPLAIN(FORMAT JSON) SELECT * FROM ({query}) as subq"
 
         with _PostgresConnection(self._config) as conn:
-            # buffered is false because it can be assumed that the data size is too large
-            cur = conn.cursor(buffered=False, dictionary=True)
+            cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
             try:
                 cur.execute(count_query)
@@ -116,8 +115,7 @@ class PostgresClient:
                 total_number = 0
 
                 for record in records:
-                    if record["select_type"] in ("PRIMARY", "SIMPLE"):
-                        total_number = record["rows"]
+                    total_number = record[0][0]['Plan']['Plan Rows']
             except PostgresConnectorError as e:
                 raise PostgresClientError(
                     f"Failed to execute query: {count_query}, Raise exception: {e}")
