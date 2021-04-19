@@ -5,9 +5,9 @@ from typing import Union
 from apache_beam.io import iobase
 from apache_beam.options.value_provider import ValueProvider
 
-from postgres_connector.splitters import BaseSplitter
+from postgres_connector.splitters.base_splitter import BaseSplitter
 from postgres_connector.client import PostgresClient
-from postgres_connector.utils import cleanse_query
+from postgres_connector.utils import clean_query
 from postgres_connector.utils import get_runtime_value
 
 
@@ -75,7 +75,7 @@ class PostgresSource(iobase.BoundedSource):
         for k, v in self._config.items():
             self._config[k] = get_runtime_value(v)
 
-        self.query = cleanse_query(get_runtime_value(self._query))
+        self.query = clean_query(get_runtime_value(self._query))
         self.client = PostgresClient(self._config)
         self._splitter.build_source(self)
 

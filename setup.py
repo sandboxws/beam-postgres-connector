@@ -54,8 +54,9 @@ PACKAGE_KEYWORDS = "apache beam postgres postgresql connector"
 PACKAGE_LONG_DESCRIPTION = README
 
 REQUIRED_PACKAGES = [
-    "apache-beam>=2.28.*",
-    psycopg2>=2.8.*",
+    "apache-beam==2.28.0",
+    "psycopg2>=2.8.*",
+    # "Cython>=0.29.23",
 ]
 
 setup(
