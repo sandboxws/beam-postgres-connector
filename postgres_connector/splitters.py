@@ -74,12 +74,6 @@ class IdsSplitter(BaseSplitter):
             if len(ids) == self._batch_size:
                 yield self._create_bundle_source(desired_bundle_size, self.source, ids)
                 ids.clear()
-        print('***********')
-        print(start_position)
-        print(stop_position)
-        print(desired_bundle_size)
-        print(len(ids))
-        print('***********')
         yield self._create_bundle_source(desired_bundle_size, self.source, ids)
 
     def _validate_query(self):
@@ -172,11 +166,6 @@ class NoSplitter(BaseSplitter):
             yield record
 
     def split(self, desired_bundle_size, start_position=None, stop_position=None):
-        print('***********')
-        print(start_position)
-        print(stop_position)
-        print(desired_bundle_size)
-        print('***********')
         if start_position is None:
             start_position = 0
         if stop_position is None:
